@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ChatGPT Clone</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f5f5f5;
+        }
+        #chat {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            height: 600px;
+            overflow-y: auto;
+        }
+        .message {
+            padding: 10px;
+            margin: 5px 0;
+        }
+        .user {
+            text-align: right;
+            color: blue;
+        }
+        .bot {
+            text-align: left;
+            color: green;
+        }
+        #inputArea {
+            max-width: 600px;
+            margin: 10px auto;
+            display: flex;
+            gap: 10px;
+        }
+        textarea {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="chat"></div>
+
+<div id="inputArea">
+    <textarea id="prompt" placeholder="Type your message..." rows="2"></textarea>
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+    async function sendMessage() {
+        const prompt = document.getElementById("prompt").value;
+        if (!prompt.trim()) return;
+
+        const chat = document.getElementById("chat");
+
+        const userMsg = document.createElement("div");
+        userMsg.className = "message user";
+        userMsg.innerText = prompt;
+        chat.appendChild(userMsg);
+
+        document.getElementById("prompt").value = "";
+
+        const res = await fetch("/ask", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt }),
+        });
+
+        const data = await res.json();
+
+        const botMsg = document.createElement("div");
+        botMsg.className = "message bot";
+        botMsg.innerText = data.response || "Error occurred.";
+        chat.appendChild(botMsg);
+
+        chat.scrollTop = chat.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
